@@ -1,0 +1,1452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8ef">
+  <title>PizzaMaker</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #30231f;
+      background: #fff8ef;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse at 77% 42%, rgba(255, 220, 177, .42), transparent 37%),
+        #fff8ef;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 64px));
+      min-height: 100vh;
+      margin-inline: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: inherit;
+      text-decoration: none;
+      font-size: 19px;
+      font-weight: 850;
+      letter-spacing: -.7px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: #f05a37;
+      color: white;
+      font-size: 22px;
+      box-shadow: 0 7px 15px #f05a3730;
+    }
+
+    .header-note {
+      color: #8b756a;
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 38px;
+      padding: 16px 0 64px;
+    }
+
+    .copy { position: relative; z-index: 1; padding-bottom: 18px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 24px;
+      color: #c74b2e;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before { content: ""; width: 27px; height: 2px; background: #f05a37; }
+
+    h1 {
+      max-width: 570px;
+      margin: 0;
+      font-size: clamp(54px, 7vw, 88px);
+      line-height: .98;
+      letter-spacing: -.075em;
+    }
+
+    h1 span { color: #f05a37; }
+
+    .description {
+      max-width: 420px;
+      margin: 23px 0 31px;
+      color: #806d63;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .start-button {
+      min-width: 178px;
+      min-height: 58px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      border: 0;
+      border-radius: 17px;
+      padding: 0 24px;
+      background: #f05a37;
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 12px 25px #f05a3733;
+      transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .start-button:hover { transform: translateY(-3px); background: #dc482a; box-shadow: 0 16px 30px #f05a3740; }
+    .start-button:focus-visible { outline: 3px solid #30231f; outline-offset: 4px; }
+    .start-button:active { transform: translateY(0); }
+    .arrow { font-size: 21px; line-height: 1; transition: transform .2s ease; }
+    .start-button:hover .arrow { transform: translateX(4px); }
+
+    .status {
+      min-height: 24px;
+      margin: 15px 0 0;
+      color: #806d63;
+      font-size: 14px;
+    }
+
+    .art {
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .orbit {
+      width: min(440px, 40vw);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border: 1px solid #efd9c4;
+      border-radius: 50%;
+    }
+
+    .orbit::before, .orbit::after {
+      content: "";
+      position: absolute;
+      border: 1px dashed #e8ceb7;
+      border-radius: 50%;
+    }
+
+    .orbit::before { inset: 28px; }
+    .orbit::after { inset: -24px; opacity: .58; }
+
+    .pizza {
+      width: 75%;
+      aspect-ratio: 1;
+      position: relative;
+      border: 16px solid #d99948;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 27%, #c94c35 0 4.5%, transparent 5%),
+        radial-gradient(circle at 67% 35%, #c94c35 0 4.5%, transparent 5%),
+        radial-gradient(circle at 55% 68%, #c94c35 0 4.5%, transparent 5%),
+        radial-gradient(circle at 29% 64%, #c94c35 0 4.5%, transparent 5%),
+        radial-gradient(circle at 52% 48%, #76a955 0 2.4%, transparent 2.8%),
+        radial-gradient(circle at 73% 57%, #76a955 0 2.4%, transparent 2.8%),
+        radial-gradient(circle at 39% 78%, #76a955 0 2.4%, transparent 2.8%),
+        radial-gradient(circle at 38% 43%, #f8cc5b 0 30%, #f3bb48 68%, #e9a93b 100%);
+      box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #f4d49a;
+      transform: rotate(-13deg);
+      transition: transform .8s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .pizza::before, .pizza::after {
+      content: "";
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #c94c35;
+      box-shadow: 0 0 0 3px #eebd55;
+    }
+
+    .pizza::before { top: 21%; left: 50%; }
+    .pizza::after { right: 19%; bottom: 27%; }
+
+    .sparkle {
+      position: absolute;
+      color: #f2a83b;
+      font-size: 27px;
+      animation: bob 3s ease-in-out infinite;
+    }
+
+    .sparkle.one { top: 13%; right: 11%; }
+    .sparkle.two { left: 7%; bottom: 19%; font-size: 20px; animation-delay: -1.2s; }
+    .sparkle.three { top: 25%; left: 4%; font-size: 16px; animation-delay: -.6s; }
+
+    .tag {
+      position: absolute;
+      right: -7px;
+      bottom: 43px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #f2e5d7;
+      border-radius: 16px;
+      padding: 12px 16px;
+      background: #fffdf9;
+      box-shadow: 0 10px 28px #69432612;
+      color: #66554b;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .tag span { font-size: 20px; }
+
+    body.started .pizza { transform: rotate(347deg) scale(1.04); }
+    body.started .orbit::before { animation: spin 18s linear infinite; }
+
+    body.make-mode .page { width: min(1040px, calc(100% - 48px)); }
+    body.make-mode header, body.make-mode > .page > main { display: none; }
+
+    .maker-screen {
+      min-height: 100vh;
+      padding: 34px 0 48px;
+    }
+
+    .maker-screen[hidden] { display: none; }
+
+    .step-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 13px;
+    }
+
+    .step-heading {
+      margin: 0;
+      color: #49312c;
+      font-size: 15px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .home-button {
+      border: 1px solid #ead8c8;
+      border-radius: 12px;
+      padding: 9px 13px;
+      background: #fffdf9;
+      color: #66554b;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease;
+    }
+
+    .home-button:hover { border-color: #e7ad91; background: #fff0e8; }
+    .home-button:focus-visible { outline: 3px solid #30231f; outline-offset: 3px; }
+
+    .progress-track {
+      height: 13px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #f5dcd4;
+      box-shadow: inset 0 1px 3px #9f4b3420;
+    }
+
+    .progress-fill {
+      width: 25%;
+      height: 100%;
+      border-radius: inherit;
+      background: #e84f43;
+      box-shadow: 0 2px 8px #e84f4350;
+    }
+
+    .progress-fill.step-two { width: 50%; }
+    .progress-fill.step-three { width: 75%; }
+    .progress-fill.step-four { width: 100%; }
+
+    .maker-title {
+      margin: 44px 0 8px;
+      text-align: center;
+      font-size: clamp(27px, 4vw, 38px);
+      letter-spacing: -.04em;
+    }
+
+    .maker-instructions {
+      margin: 0;
+      text-align: center;
+      color: #806d63;
+      font-size: 15px;
+    }
+
+    .workbench {
+      min-height: 490px;
+      display: grid;
+      grid-template-columns: 1fr minmax(270px, 390px) 1fr;
+      align-items: center;
+      gap: 28px;
+      margin-top: 16px;
+    }
+
+    .sauce-list {
+      display: grid;
+      gap: 17px;
+    }
+
+    .sauce-button {
+      min-height: 122px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border: 2px solid #f1e1d4;
+      border-radius: 22px;
+      padding: 17px;
+      background: #fffdf9;
+      color: #49312c;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 12px 26px #7044220c;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .sauce-button:hover { transform: translateY(-3px); border-color: #e7ad91; box-shadow: 0 16px 30px #70442216; }
+    .sauce-button:focus-visible { outline: 3px solid #30231f; outline-offset: 3px; }
+    .sauce-button[aria-pressed="true"] { border-color: #e84f43; box-shadow: 0 0 0 4px #e84f4318; }
+
+    .bottle {
+      width: 53px;
+      height: 72px;
+      flex: 0 0 53px;
+      position: relative;
+      display: block;
+      border: 3px solid #e7d6c4;
+      border-radius: 12px 12px 17px 17px;
+      background: linear-gradient(to top, var(--sauce-color) 0 68%, #ffffff 68% 100%);
+      box-shadow: inset 0 3px 7px #fff9, 0 5px 9px #66402b14;
+    }
+
+    .bottle::before {
+      content: "";
+      width: 21px;
+      height: 13px;
+      position: absolute;
+      top: -13px;
+      left: 13px;
+      border-radius: 5px 5px 2px 2px;
+      background: var(--cap-color);
+      box-shadow: 0 3px 0 #00000012;
+    }
+
+    .bottle::after {
+      content: "";
+      position: absolute;
+      inset: 23px 8px auto;
+      height: 16px;
+      border-radius: 4px;
+      background: #fffdf4;
+      box-shadow: 0 1px 3px #00000012;
+    }
+
+    .tomato-bottle { --sauce-color: #e8493d; --cap-color: #c9342c; }
+    .mayo-bottle { --sauce-color: #fffdf2; --cap-color: #e8cf77; }
+
+    .sauce-name { display: block; font-size: 15px; font-weight: 850; }
+    .sauce-hint { display: block; margin-top: 5px; color: #8b756a; font-size: 12px; }
+
+    .pizza-stage {
+      min-height: 390px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff0df 0 48%, transparent 49%);
+    }
+
+    .dough {
+      width: min(340px, 34vw);
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+      border: 17px solid #d79a55;
+      border-radius: 50%;
+      background: #f5d99b;
+      box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #efc77d;
+      transition: background .35s ease, box-shadow .35s ease, transform .35s ease;
+    }
+
+    .dough::before {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border: 1px solid #edc77d;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .dough.tomato { background: #e96850; box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #f2bd76; }
+    .dough.mayonnaise { background: #fff5d9; box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #f2d391; }
+
+    .sauce-status {
+      grid-column: 1 / -1;
+      min-height: 24px;
+      margin: -1px 0 0;
+      color: #806d63;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .next-step {
+      min-height: 49px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 0;
+      border-radius: 14px;
+      padding: 0 22px;
+      background: #e84f43;
+      color: white;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 9px 20px #e84f4330;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .next-step:hover { transform: translateY(-2px); background: #d84238; }
+    .next-step:focus-visible { outline: 3px solid #30231f; outline-offset: 3px; }
+    .next-step[hidden] { display: none; }
+
+    .step-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .back-step {
+      min-height: 49px;
+      border: 1px solid #e8d7c8;
+      border-radius: 14px;
+      padding: 0 20px;
+      background: #fffdf9;
+      color: #66554b;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .topping-stage {
+      min-height: 340px;
+      display: grid;
+      place-items: center;
+      margin: 16px auto 8px;
+    }
+
+    .topping-stage .dough { width: min(320px, 72vw); }
+
+    .topping-piece {
+      position: absolute;
+      z-index: 1;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #ffffffa8;
+      border-radius: 50%;
+      background: #fff9e8d9;
+      box-shadow: 0 2px 5px #57351c45;
+      font-size: 20px;
+      line-height: 1;
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      transform: translate(-50%, -50%);
+      animation: topping-pop .22s ease-out both;
+    }
+
+    .topping-piece.dragging { z-index: 2; cursor: grabbing; scale: 1.15; }
+
+    .topping-title {
+      margin: 14px 0 12px;
+      color: #49312c;
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .topping-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .topping-button {
+      position: relative;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid #f1e1d4;
+      border-radius: 14px;
+      padding: 10px;
+      background: #fffdf9;
+      color: #49312c;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 750;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 6px 14px #7044220a;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .topping-button:hover { transform: translateY(-2px); border-color: #e7ad91; box-shadow: 0 9px 18px #70442215; }
+    .topping-button:focus-visible { outline: 3px solid #30231f; outline-offset: 2px; }
+    .topping-icon { flex: 0 0 auto; font-size: 23px; }
+
+    .topping-count {
+      min-width: 24px;
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      margin-left: auto;
+      border-radius: 50%;
+      background: #fff0e8;
+      color: #c74b2e;
+      font-size: 11px;
+    }
+
+    .topping-count[hidden] { display: none; }
+
+    .topping-feedback {
+      min-height: 24px;
+      margin: 12px 0 0;
+      color: #806d63;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .oven-step[hidden] { display: none; }
+
+    .oven-panel {
+      max-width: 680px;
+      margin: 32px auto 0;
+      border: 1px solid #f1e1d4;
+      border-radius: 26px;
+      padding: clamp(20px, 5vw, 38px);
+      background: #fffdf9;
+      text-align: center;
+      box-shadow: 0 20px 45px #70442212;
+    }
+
+    .oven-visual {
+      width: min(300px, 75vw);
+      min-height: 190px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe6c9 0 43%, transparent 44%);
+    }
+
+    .oven-door {
+      width: 190px;
+      height: 150px;
+      display: grid;
+      place-items: center;
+      border: 9px solid #574541;
+      border-radius: 28px 28px 20px 20px;
+      background: linear-gradient(#3d3332, #201c1d);
+      box-shadow: inset 0 0 0 4px #8b6a5e, 0 13px 22px #422c2630;
+      transition: box-shadow .25s ease, filter .25s ease;
+    }
+
+    .oven-window {
+      width: 128px;
+      height: 86px;
+      display: grid;
+      place-items: center;
+      border: 4px solid #b88b69;
+      border-radius: 14px;
+      background: #252023;
+      font-size: 47px;
+      transition: background .25s ease;
+    }
+
+    .oven-step.baking .oven-door { box-shadow: inset 0 0 0 4px #f6a24e, 0 0 28px #f1782b88, 0 13px 22px #422c2630; }
+    .oven-step.baking .oven-window { background: linear-gradient(#693c2d, #3e2526); }
+
+    .oven-start {
+      min-height: 52px;
+      border: 0;
+      border-radius: 15px;
+      padding: 0 24px;
+      background: #e84f43;
+      color: white;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 9px 20px #e84f4330;
+    }
+
+    .oven-start:hover { background: #d84238; }
+    .oven-start:focus-visible, .fire-button:focus-visible { outline: 3px solid #30231f; outline-offset: 3px; }
+    .oven-start[hidden] { display: none; }
+
+    .oven-gauges {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 22px 0 14px;
+    }
+
+    .gauge {
+      border: 1px solid #f1e1d4;
+      border-radius: 16px;
+      padding: 14px 10px;
+      background: #fff8ef;
+    }
+
+    .gauge-label { display: block; color: #806d63; font-size: 12px; font-weight: 750; }
+    .gauge-value { display: block; margin-top: 5px; color: #49312c; font-size: 25px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .temperature-value { transition: color .2s ease; }
+    .temperature-value.out-of-range { color: #d84238; }
+
+    .oven-meter {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #74b8df 0 25%, #84bd73 25% 75%, #ef8159 75%);
+    }
+
+    .temperature-marker {
+      width: 12px;
+      height: 12px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: #3d3332;
+      box-shadow: 0 1px 4px #0005;
+      transform: translateX(-50%);
+      transition: margin-left .2s ease;
+    }
+
+    .oven-status {
+      min-height: 42px;
+      margin: 14px 0;
+      color: #806d63;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .fire-button {
+      min-width: 152px;
+      min-height: 54px;
+      border: 0;
+      border-radius: 16px;
+      background: #ff8a35;
+      color: #39241a;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 22px #f1793760;
+    }
+
+    .fire-button:hover { background: #ff9c48; }
+    .fire-button[hidden] { display: none; }
+
+    .step-three-actions { margin-top: 20px; }
+
+    .melted-cheese {
+      z-index: 2;
+      border-color: #e9ae43;
+      border-radius: 45% 55% 57% 43%;
+      background: #ffd35b;
+      box-shadow: 0 2px 7px #a85a2870, 0 0 12px #ffce5c;
+      scale: 1.16;
+      animation: cheese-melt .8s ease-out both;
+    }
+
+    .melted-cheese::after {
+      content: "";
+      width: 9px;
+      height: 13px;
+      position: absolute;
+      right: 4px;
+      bottom: -9px;
+      border-radius: 0 0 7px 7px;
+      background: #ffd35b;
+    }
+
+    .step-four[hidden] { display: none; }
+
+    .cutting-board {
+      max-width: 760px;
+      margin: 24px auto 0;
+      border: 1px solid #f1e1d4;
+      border-radius: 26px;
+      padding: clamp(18px, 4vw, 32px);
+      background: #fffdf9;
+      text-align: center;
+      box-shadow: 0 20px 45px #70442212;
+    }
+
+    .serve-pizza-stage {
+      min-height: 380px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .serve-pizza {
+      width: min(330px, 70vw);
+      aspect-ratio: 1;
+      position: relative;
+      border: 18px solid #d79a55;
+      border-radius: 50%;
+      background: #f5d99b;
+      box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #efc77d;
+      cursor: crosshair;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .serve-pizza::before {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      z-index: 1;
+      border: 1px solid #edc77d;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .serve-pizza.tomato { background: #e96850; box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #f2bd76; }
+    .serve-pizza.mayonnaise { background: #fff5d9; box-shadow: 0 25px 45px #8e542533, inset 0 0 0 7px #f2d391; }
+
+    .serve-topping {
+      position: absolute;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #ffffffa8;
+      border-radius: 50%;
+      background: #fff9e8d9;
+      box-shadow: 0 2px 5px #57351c45;
+      font-size: 20px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .serve-topping.melted-cheese { border-color: #e9ae43; background: #ffd35b; box-shadow: 0 2px 7px #a85a2870, 0 0 12px #ffce5c; }
+
+    .knife-button {
+      min-height: 52px;
+      border: 2px solid #d9c4b3;
+      border-radius: 15px;
+      padding: 0 20px;
+      background: #fff8ef;
+      color: #49312c;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .knife-button:hover { transform: translateY(-2px); border-color: #e7ad91; }
+    .knife-button[aria-pressed="true"] { border-color: #e84f43; background: #fff0e8; }
+    .knife-button:focus-visible, .serve-pizza:focus-visible { outline: 3px solid #30231f; outline-offset: 3px; }
+
+    .slice-guide {
+      width: 2px;
+      height: 128%;
+      display: none;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 5;
+      border-left: 3px dashed #fff;
+      filter: drop-shadow(0 1px 2px #412819);
+      transform: translate(-50%, -50%) rotate(45deg);
+      pointer-events: none;
+      animation: guide-sheen 1s linear infinite;
+    }
+
+    .serve-pizza.knife-active .slice-guide { display: block; }
+
+    .slice-cut {
+      width: 140%;
+      height: 3px;
+      position: absolute;
+      left: -20%;
+      top: 50%;
+      z-index: 4;
+      border-radius: 50%;
+      background: #fff8d7;
+      box-shadow: 0 1px 3px #8e5425;
+      transform: rotate(var(--slice-angle));
+      pointer-events: none;
+      animation: cut-draw .35s ease-out both;
+    }
+
+    .eaten-bite {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: 50%;
+      background: #fffdf9;
+      pointer-events: none;
+    }
+
+    .serve-status {
+      min-height: 24px;
+      margin: 13px 0 0;
+      color: #806d63;
+      font-size: 14px;
+    }
+
+    .serve-finished { color: #c74b2e; font-size: 20px; font-weight: 900; }
+
+    @media (max-width: 760px) {
+      body.make-mode .page { width: min(100% - 36px, 540px); }
+      .maker-screen { padding-top: 24px; }
+      .maker-title { margin-top: 34px; }
+      .workbench { grid-template-columns: 1fr 1fr; gap: 20px 14px; margin-top: 12px; }
+      .pizza-stage { grid-column: 1 / -1; grid-row: 1; min-height: 300px; }
+      .dough { width: min(270px, 68vw); }
+      .sauce-list { grid-row: 2; }
+      .sauce-button { min-height: 100px; justify-content: center; flex-direction: column; gap: 11px; padding: 14px 8px; text-align: center; }
+      .sauce-name { font-size: 13px; }
+      .sauce-hint { font-size: 11px; }
+      .bottle { width: 45px; height: 62px; flex-basis: 45px; }
+      .bottle::before { left: 9px; }
+      .bottle::after { inset: 19px 6px auto; }
+      .sauce-status { grid-column: 1 / -1; }
+      .topping-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+      .topping-button { min-height: 67px; flex-direction: column; justify-content: center; gap: 3px; padding: 8px 4px; text-align: center; font-size: 10px; }
+      .topping-icon { font-size: 21px; }
+      .topping-count { min-width: 19px; height: 19px; position: absolute; margin: -42px 0 0 56px; }
+      .topping-stage { min-height: 300px; }
+      .oven-panel { margin-top: 24px; }
+      .oven-gauges { gap: 8px; }
+      .gauge-value { font-size: 22px; }
+      .serve-pizza-stage { min-height: 310px; }
+    }
+
+    @keyframes bob { 50% { transform: translateY(-8px) rotate(12deg); } }
+    @keyframes topping-pop { from { opacity: 0; scale: .4; } to { opacity: 1; scale: 1; } }
+    @keyframes cheese-melt { from { scale: .8; border-radius: 50%; } to { scale: 1.16; border-radius: 45% 55% 57% 43%; } }
+    @keyframes guide-sheen { to { background-position: 0 16px; } }
+    @keyframes cut-draw { from { opacity: 0; scale: .05 1; } to { opacity: 1; scale: 1 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 40px, 520px); }
+      header { height: 76px; }
+      .header-note { font-size: 10px; }
+      main { grid-template-columns: 1fr; gap: 0; padding: 35px 0 44px; }
+      .copy { padding-bottom: 0; }
+      h1 { font-size: clamp(58px, 14vw, 78px); }
+      .description { font-size: 15px; }
+      .art { min-height: 330px; margin-top: 20px; }
+      .orbit { width: min(290px, 72vw); }
+      .tag { right: 0; bottom: 8px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="brand" href="/pizzamaker.html" aria-label="PizzaMaker home">
+        <span class="brand-icon" aria-hidden="true">🍕</span>
+        <span>PizzaMaker</span>
+      </a>
+      <span class="header-note">Made fresh, made by you</span>
+    </header>
+
+    <main>
+      <section class="copy" aria-labelledby="headline">
+        <div class="eyebrow">A little slice of fun</div>
+        <h1 id="headline">Your pizza.<br>Your <span>rules.</span></h1>
+        <p class="description">Pick your favorite flavors, get creative, and make a pizza that is 100% you. Your delicious adventure starts here.</p>
+        <button class="start-button" id="startButton" type="button">
+          <span>Start</span><span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <p class="status" id="status" aria-live="polite"></p>
+      </section>
+
+      <div class="art" aria-hidden="true">
+        <div class="orbit">
+          <div class="pizza"></div>
+          <span class="sparkle one">✦</span>
+          <span class="sparkle two">✦</span>
+          <span class="sparkle three">✧</span>
+        </div>
+        <div class="tag"><span>✨</span> Fresh from your imagination</div>
+      </div>
+    </main>
+
+    <section class="maker-screen" id="makerScreen" aria-labelledby="stepTitle" hidden>
+      <div class="step-topline">
+        <p class="step-heading" id="stepTitle">Step 1</p>
+        <button class="home-button" id="homeButton" type="button">🏠 กลับหน้าหลัก</button>
+      </div>
+      <div class="progress-track" role="progressbar" aria-label="Pizza making progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div id="sauceStep">
+        <h1 class="maker-title">Choose your sauce</h1>
+        <p class="maker-instructions">Tap a sauce bottle to spread it on your pizza.</p>
+
+        <div class="workbench">
+          <div class="sauce-list" aria-label="Sauce options">
+            <button class="sauce-button" type="button" data-sauce="tomato" aria-pressed="false">
+              <span class="bottle tomato-bottle" aria-hidden="true"></span>
+              <span><span class="sauce-name">Tomato sauce</span><span class="sauce-hint">Rich &amp; tangy</span></span>
+            </button>
+          </div>
+
+          <div class="pizza-stage" role="img" aria-label="Plain pizza dough">
+            <div class="dough" id="dough"></div>
+          </div>
+
+          <div class="sauce-list" aria-label="More sauce options">
+            <button class="sauce-button" type="button" data-sauce="mayonnaise" aria-pressed="false">
+              <span class="bottle mayo-bottle" aria-hidden="true"></span>
+              <span><span class="sauce-name">Mayonese sauce</span><span class="sauce-hint">Creamy &amp; smooth</span></span>
+            </button>
+          </div>
+          <p class="sauce-status" id="sauceStatus" aria-live="polite">Your pizza is plain and ready for sauce.</p>
+          <div class="step-actions">
+            <button class="next-step" id="nextStep" type="button" hidden>Next <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="toppingStep" hidden>
+        <h1 class="maker-title">Pick your toppings</h1>
+        <p class="maker-instructions">Tap any topping to add it, then drag it anywhere on the pizza. Add as many as you like!</p>
+
+        <div class="topping-stage" role="img" aria-label="Pizza with sauce, ready for toppings">
+          <div class="dough" id="toppingDough"></div>
+        </div>
+
+        <h2 class="topping-title">Choose your toppings</h2>
+        <div class="topping-grid" id="toppingGrid" aria-label="Pizza toppings">
+          <button class="topping-button" type="button" data-name="Shrimp" data-icon="🍤"><span class="topping-icon">🍤</span><span>Shrimp</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Sausage" data-icon="🌭"><span class="topping-icon">🌭</span><span>Sausage</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Ham" data-icon="🥓"><span class="topping-icon">🥓</span><span>Ham</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Bacon" data-icon="🥓"><span class="topping-icon">🥓</span><span>Bacon</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Chicken" data-icon="🍗"><span class="topping-icon">🍗</span><span>Chicken</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Crab sticks" data-icon="🦀"><span class="topping-icon">🦀</span><span>Crab sticks</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Tuna" data-icon="🐟"><span class="topping-icon">🐟</span><span>Tuna</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Mushroom" data-icon="🍄"><span class="topping-icon">🍄</span><span>Mushroom</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Corn" data-icon="🌽"><span class="topping-icon">🌽</span><span>Corn</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Pineapple" data-icon="🍍"><span class="topping-icon">🍍</span><span>Pineapple</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Onions" data-icon="🧅"><span class="topping-icon">🧅</span><span>Onions</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Bell pepper" data-icon="🫑"><span class="topping-icon">🫑</span><span>Bell pepper</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Black olives" data-icon="🫒"><span class="topping-icon">🫒</span><span>Black olives</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Cheese" data-icon="🧀"><span class="topping-icon">🧀</span><span>Cheese</span><span class="topping-count" hidden>0</span></button>
+          <button class="topping-button" type="button" data-name="Spinach" data-icon="🥬"><span class="topping-icon">🥬</span><span>Spinach</span><span class="topping-count" hidden>0</span></button>
+        </div>
+        <p class="topping-feedback" id="toppingFeedback" aria-live="polite">No toppings yet. Add as many as you like!</p>
+        <div class="step-actions">
+          <button class="next-step" id="nextToOven" type="button" hidden>Next <span aria-hidden="true">→</span></button>
+          <button class="back-step" id="backStep" type="button">← Back to sauce</button>
+        </div>
+      </div>
+
+      <div class="oven-step" id="ovenStep" hidden>
+        <h1 class="maker-title">Bake your pizza</h1>
+        <p class="maker-instructions">Keep the oven between 150°C and 200°C for one minute.</p>
+        <div class="oven-panel">
+          <div class="oven-visual" aria-hidden="true">
+            <div class="oven-door"><div class="oven-window">🍕</div></div>
+          </div>
+          <button class="oven-start" id="ovenStart" type="button">Put pizza in the oven</button>
+          <div class="oven-gauges">
+            <div class="gauge">
+              <span class="gauge-label">OVEN TEMPERATURE</span>
+              <span class="gauge-value temperature-value" id="temperatureValue">175°C</span>
+            </div>
+            <div class="gauge">
+              <span class="gauge-label">TIME IN SAFE ZONE</span>
+              <span class="gauge-value" id="bakeTimer">01:00</span>
+            </div>
+          </div>
+          <div class="oven-meter" role="meter" aria-label="Oven temperature" aria-valuemin="100" aria-valuemax="250" aria-valuenow="175">
+            <div class="temperature-marker" id="temperatureMarker"></div>
+          </div>
+          <p class="oven-status" id="ovenStatus" aria-live="polite">Press the button to put your pizza in the oven.</p>
+          <button class="fire-button" id="fireButton" type="button" hidden>🔥 Add fire</button>
+          <div class="step-actions" id="ovenActions" hidden>
+            <button class="next-step" id="nextToServe" type="button">Next <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <div class="step-actions step-three-actions">
+          <button class="back-step" id="backToToppings" type="button">← Back to toppings</button>
+        </div>
+      </div>
+
+      <div class="step-four" id="serveStep" hidden>
+        <h1 class="maker-title">Slice &amp; enjoy!</h1>
+        <p class="maker-instructions">Pick up the knife, drag to slice, or put it away and tap the pizza to eat.</p>
+        <div class="cutting-board">
+          <div class="serve-pizza-stage">
+            <div class="serve-pizza" id="servePizza" role="button" tabindex="0" aria-label="Baked pizza; pick up the knife to cut it, or eat a bite">
+              <div class="slice-guide" id="sliceGuide" aria-hidden="true"></div>
+            </div>
+          </div>
+          <button class="knife-button" id="knifeButton" type="button" aria-pressed="false">🔪 Pick up the knife</button>
+          <p class="serve-status" id="serveStatus" aria-live="polite">Pick up the knife to cut your pizza into slices.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const startButton = document.querySelector('#startButton');
+    const status = document.querySelector('#status');
+    const makerScreen = document.querySelector('#makerScreen');
+    const dough = document.querySelector('#dough');
+    const toppingDough = document.querySelector('#toppingDough');
+    const sauceStatus = document.querySelector('#sauceStatus');
+    const nextStep = document.querySelector('#nextStep');
+    const sauceStep = document.querySelector('#sauceStep');
+    const toppingStep = document.querySelector('#toppingStep');
+    const progressFill = document.querySelector('#progressFill');
+    const progressTrack = document.querySelector('.progress-track');
+    const toppingFeedback = document.querySelector('#toppingFeedback');
+    let totalToppings = 0;
+    let bakeRemaining = 60;
+    let ovenTemperature = 175;
+    let bakeInterval = null;
+    let fireTimeout = null;
+    let fireHideTimeout = null;
+    let baking = false;
+    let bakeFinished = false;
+
+    startButton.addEventListener('click', () => {
+      document.body.classList.add('make-mode');
+      makerScreen.hidden = false;
+      makerScreen.querySelector('[data-sauce="tomato"]').focus();
+    });
+
+    document.querySelectorAll('[data-sauce]').forEach(button => {
+      button.addEventListener('click', () => {
+        const sauce = button.dataset.sauce;
+        const isSelected = button.getAttribute('aria-pressed') === 'true';
+
+        document.querySelectorAll('[data-sauce]').forEach(option => option.setAttribute('aria-pressed', 'false'));
+        dough.classList.remove('tomato', 'mayonnaise');
+
+        if (isSelected) {
+          sauceStatus.textContent = 'Sauce removed. Your pizza is plain again.';
+          document.querySelector('.pizza-stage').setAttribute('aria-label', 'Plain pizza dough');
+          nextStep.hidden = true;
+          return;
+        }
+
+        button.setAttribute('aria-pressed', 'true');
+        dough.classList.add(sauce);
+        nextStep.hidden = false;
+        const label = sauce === 'tomato' ? 'Tomato sauce' : 'Mayonese sauce';
+        sauceStatus.textContent = `${label} added to your pizza!`;
+        document.querySelector('.pizza-stage').setAttribute('aria-label', `Pizza with ${label.toLowerCase()}`);
+      });
+    });
+
+    nextStep.addEventListener('click', () => {
+      const selectedSauce = document.querySelector('[data-sauce][aria-pressed="true"]');
+      if (!selectedSauce) return;
+
+      toppingDough.classList.add(selectedSauce.dataset.sauce);
+      sauceStep.hidden = true;
+      toppingStep.hidden = false;
+      document.querySelector('#stepTitle').textContent = 'Step 2';
+      progressFill.classList.add('step-two');
+      progressTrack.setAttribute('aria-valuenow', '50');
+      toppingStep.querySelector('.topping-button').focus();
+    });
+
+    document.querySelector('#backStep').addEventListener('click', () => {
+      toppingStep.hidden = true;
+      sauceStep.hidden = false;
+      document.querySelector('#stepTitle').textContent = 'Step 1';
+      progressFill.classList.remove('step-two');
+      progressTrack.setAttribute('aria-valuenow', '25');
+      nextStep.focus();
+    });
+
+    document.querySelectorAll('.topping-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const topping = document.createElement('span');
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.sqrt(Math.random()) * 27;
+        const x = 50 + Math.cos(angle) * radius;
+        const y = 50 + Math.sin(angle) * radius;
+        topping.className = 'topping-piece';
+        topping.dataset.name = button.dataset.name;
+        topping.textContent = button.dataset.icon;
+        topping.setAttribute('aria-hidden', 'true');
+        topping.style.left = `${x}%`;
+        topping.style.top = `${y}%`;
+        topping.addEventListener('pointerdown', event => {
+          event.preventDefault();
+          const pieceRect = topping.getBoundingClientRect();
+          const grabOffsetX = event.clientX - (pieceRect.left + pieceRect.width / 2);
+          const grabOffsetY = event.clientY - (pieceRect.top + pieceRect.height / 2);
+          const pizzaRect = toppingDough.getBoundingClientRect();
+          topping.classList.add('dragging');
+          topping.setPointerCapture(event.pointerId);
+
+          const moveTopping = moveEvent => {
+            const maxRadius = Math.min(pizzaRect.width, pizzaRect.height) / 2 - Math.max(pieceRect.width, pieceRect.height) / 2 - 18;
+            let centerX = moveEvent.clientX - pizzaRect.left - grabOffsetX;
+            let centerY = moveEvent.clientY - pizzaRect.top - grabOffsetY;
+            const offsetX = centerX - pizzaRect.width / 2;
+            const offsetY = centerY - pizzaRect.height / 2;
+            const distance = Math.hypot(offsetX, offsetY);
+
+            if (distance > maxRadius) {
+              const scale = maxRadius / distance;
+              centerX = pizzaRect.width / 2 + offsetX * scale;
+              centerY = pizzaRect.height / 2 + offsetY * scale;
+            }
+
+            topping.style.left = `${centerX}px`;
+            topping.style.top = `${centerY}px`;
+          };
+
+          const stopDragging = () => {
+            topping.classList.remove('dragging');
+            topping.removeEventListener('pointermove', moveTopping);
+            topping.removeEventListener('pointerup', stopDragging);
+            topping.removeEventListener('pointercancel', stopDragging);
+          };
+
+          topping.addEventListener('pointermove', moveTopping);
+          topping.addEventListener('pointerup', stopDragging);
+          topping.addEventListener('pointercancel', stopDragging);
+        });
+        toppingDough.append(topping);
+
+        const count = button.querySelector('.topping-count');
+        const nextCount = Number(count.textContent || 0) + 1;
+        count.textContent = nextCount;
+        count.hidden = false;
+        button.setAttribute('aria-label', `Add ${button.dataset.name}; ${nextCount} added`);
+        totalToppings++;
+        document.querySelector('#nextToOven').hidden = false;
+        toppingFeedback.textContent = `${totalToppings} topping${totalToppings === 1 ? '' : 's'} added. Keep adding—toppings can overlap!`;
+        const toppingWord = totalToppings === 1 ? 'topping' : 'toppings';
+        document.querySelector('.topping-stage').setAttribute('aria-label', `Pizza with ${totalToppings} ${toppingWord}`);
+      });
+    });
+
+    const nextToOven = document.querySelector('#nextToOven');
+    const ovenStep = document.querySelector('#ovenStep');
+    const temperatureValue = document.querySelector('#temperatureValue');
+    const temperatureMarker = document.querySelector('#temperatureMarker');
+    const temperatureMeter = document.querySelector('[role="meter"]');
+    const bakeTimer = document.querySelector('#bakeTimer');
+    const ovenStatus = document.querySelector('#ovenStatus');
+    const fireButton = document.querySelector('#fireButton');
+    const ovenStart = document.querySelector('#ovenStart');
+    const ovenActions = document.querySelector('#ovenActions');
+    const serveStep = document.querySelector('#serveStep');
+    const servePizza = document.querySelector('#servePizza');
+    const knifeButton = document.querySelector('#knifeButton');
+    const serveStatus = document.querySelector('#serveStatus');
+    let knifeActive = false;
+    let sliceStart = null;
+    let cutCount = 0;
+    let eatenBites = 0;
+    let eatingAudioContext = null;
+
+    nextToOven.addEventListener('click', () => {
+      if (totalToppings === 0) return;
+      toppingStep.hidden = true;
+      ovenStep.hidden = false;
+      document.querySelector('#stepTitle').textContent = 'Step 3';
+      progressFill.classList.remove('step-two');
+      progressFill.classList.add('step-three');
+      progressTrack.setAttribute('aria-valuenow', '75');
+      document.querySelector('#ovenStart').focus();
+    });
+
+    document.querySelector('#backToToppings').addEventListener('click', () => {
+      if (baking) return;
+      ovenStep.hidden = true;
+      toppingStep.hidden = false;
+      document.querySelector('#stepTitle').textContent = 'Step 2';
+      progressFill.classList.remove('step-three');
+      progressFill.classList.add('step-two');
+      progressTrack.setAttribute('aria-valuenow', '50');
+      nextToOven.focus();
+    });
+
+    function updateOvenDisplay() {
+      temperatureValue.textContent = `${ovenTemperature}°C`;
+      temperatureValue.classList.toggle('out-of-range', ovenTemperature < 150 || ovenTemperature > 200);
+      temperatureMeter.setAttribute('aria-valuenow', String(ovenTemperature));
+      temperatureMarker.style.marginLeft = `${Math.max(0, Math.min(100, ((ovenTemperature - 100) / 150) * 100))}%`;
+      const minutes = Math.floor(bakeRemaining / 60).toString().padStart(2, '0');
+      const seconds = (bakeRemaining % 60).toString().padStart(2, '0');
+      bakeTimer.textContent = `${minutes}:${seconds}`;
+    }
+
+    function scheduleFirePrompt() {
+      window.clearTimeout(fireTimeout);
+      if (!baking || bakeFinished) return;
+
+      fireTimeout = window.setTimeout(() => {
+        if (!baking || bakeFinished) return;
+        fireButton.hidden = false;
+        ovenStatus.textContent = 'The temperature is dropping—press Add fire to bring it back into the safe zone.';
+        fireHideTimeout = window.setTimeout(() => {
+          fireButton.hidden = true;
+          scheduleFirePrompt();
+        }, 4500);
+      }, 3500 + Math.random() * 3500);
+    }
+
+    function finishBaking() {
+      bakeFinished = true;
+      baking = false;
+      window.clearInterval(bakeInterval);
+      window.clearTimeout(fireTimeout);
+      window.clearTimeout(fireHideTimeout);
+      fireButton.hidden = true;
+      ovenStart.hidden = true;
+      ovenStep.classList.remove('baking');
+      ovenStatus.textContent = 'Perfect! Your pizza is baked and ready to serve.';
+      toppingDough.querySelectorAll('[data-name="Cheese"]').forEach(piece => piece.classList.add('melted-cheese'));
+      document.querySelector('#backToToppings').hidden = true;
+      ovenActions.hidden = false;
+      updateOvenDisplay();
+    }
+
+    ovenStart.addEventListener('click', () => {
+      if (baking || bakeFinished) return;
+      baking = true;
+      ovenStart.hidden = true;
+      ovenStep.classList.add('baking');
+      ovenStatus.textContent = 'Baking! Keep the temperature between 150°C and 200°C.';
+      scheduleFirePrompt();
+
+      bakeInterval = window.setInterval(() => {
+        ovenTemperature = Math.max(100, Math.min(200, ovenTemperature + Math.floor(Math.random() * 5) - 3));
+        if (ovenTemperature >= 150 && ovenTemperature <= 200) {
+          bakeRemaining = Math.max(0, bakeRemaining - 1);
+          ovenStatus.textContent = 'Temperature is in the safe zone. Keep it steady!';
+        } else {
+          ovenStatus.textContent = 'Temperature is too low; baking timer paused. Press Add fire when it appears.';
+        }
+        updateOvenDisplay();
+        if (bakeRemaining === 0) finishBaking();
+      }, 1000);
+    });
+
+    fireButton.addEventListener('click', () => {
+      if (!baking) return;
+      ovenTemperature = Math.min(200, ovenTemperature + 12);
+      fireButton.hidden = true;
+      window.clearTimeout(fireHideTimeout);
+      ovenStatus.textContent = `Fire added! Oven is now ${ovenTemperature}°C.`;
+      updateOvenDisplay();
+      scheduleFirePrompt();
+    });
+
+    document.querySelector('#nextToServe').addEventListener('click', () => {
+      if (!bakeFinished) return;
+
+      ovenStep.hidden = true;
+      serveStep.hidden = false;
+      document.querySelector('#stepTitle').textContent = 'Step 4';
+      progressFill.classList.remove('step-three');
+      progressFill.classList.add('step-four');
+      progressTrack.setAttribute('aria-valuenow', '100');
+      servePizza.classList.add(...Array.from(toppingDough.classList).filter(name => ['tomato', 'mayonnaise'].includes(name)));
+      toppingDough.querySelectorAll('.topping-piece').forEach(piece => {
+        const servedTopping = document.createElement('span');
+        servedTopping.className = 'serve-topping';
+        if (piece.classList.contains('melted-cheese')) servedTopping.classList.add('melted-cheese');
+        servedTopping.dataset.name = piece.dataset.name;
+        servedTopping.textContent = piece.textContent;
+        servedTopping.style.left = piece.style.left;
+        servedTopping.style.top = piece.style.top;
+        servePizza.append(servedTopping);
+      });
+      document.querySelector('#knifeButton').focus();
+    });
+
+    knifeButton.addEventListener('click', () => {
+      knifeActive = !knifeActive;
+      knifeButton.setAttribute('aria-pressed', String(knifeActive));
+      knifeButton.textContent = knifeActive ? '🔪 Put the knife away' : '🔪 Pick up the knife';
+      servePizza.classList.toggle('knife-active', knifeActive);
+      servePizza.setAttribute('aria-label', knifeActive
+        ? 'Knife picked up; drag on the pizza to cut it'
+        : 'Baked pizza; pick up the knife to cut it, or tap to eat a bite');
+      serveStatus.textContent = knifeActive
+        ? 'Knife ready! Drag across the pizza to make a cut. Tap the knife again to put it away.'
+        : 'Knife put away. Tap the pizza to eat a bite.';
+    });
+
+    function playEatingSound() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      eatingAudioContext ??= new AudioContextClass();
+      if (eatingAudioContext.state === 'suspended') eatingAudioContext.resume();
+      const duration = .16;
+      const frameCount = Math.floor(eatingAudioContext.sampleRate * duration);
+      const buffer = eatingAudioContext.createBuffer(1, frameCount, eatingAudioContext.sampleRate);
+      const channel = buffer.getChannelData(0);
+
+      for (let index = 0; index < frameCount; index++) {
+        const fade = 1 - index / frameCount;
+        channel[index] = (Math.random() * 2 - 1) * fade * (index % 350 < 130 ? .45 : .12);
+      }
+
+      const source = eatingAudioContext.createBufferSource();
+      const filter = eatingAudioContext.createBiquadFilter();
+      const gain = eatingAudioContext.createGain();
+      filter.type = 'lowpass';
+      filter.frequency.value = 950;
+      gain.gain.setValueAtTime(.18, eatingAudioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, eatingAudioContext.currentTime + duration);
+      source.buffer = buffer;
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(eatingAudioContext.destination);
+      source.start();
+    }
+
+    function addCut(start, end) {
+      const angle = Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
+      const cut = document.createElement('span');
+      cut.className = 'slice-cut';
+      cut.setAttribute('aria-hidden', 'true');
+      cut.style.setProperty('--slice-angle', `${angle}deg`);
+      servePizza.append(cut);
+      cutCount++;
+      serveStatus.textContent = `Slice ${cutCount} cut! Keep slicing or put the knife away to eat.`;
+    }
+
+    servePizza.addEventListener('pointerdown', event => {
+      if (!knifeActive || !event.isPrimary) return;
+      const rect = servePizza.getBoundingClientRect();
+      sliceStart = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      servePizza.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    servePizza.addEventListener('pointerup', event => {
+      if (!knifeActive || !sliceStart) return;
+      const rect = servePizza.getBoundingClientRect();
+      const end = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      if (Math.hypot(end.x - sliceStart.x, end.y - sliceStart.y) > 28) addCut(sliceStart, end);
+      sliceStart = null;
+    });
+
+    servePizza.addEventListener('pointercancel', () => { sliceStart = null; });
+
+    function eatPizzaBite() {
+      if (knifeActive || eatenBites >= 6) return;
+      const bite = document.createElement('span');
+      bite.className = 'eaten-bite';
+      bite.setAttribute('aria-hidden', 'true');
+      const startAngle = -90 + eatenBites * 60;
+      const sectorPoints = ['50% 50%'];
+      for (let angle = startAngle; angle <= startAngle + 60; angle += 5) {
+        const radians = angle * Math.PI / 180;
+        const x = 50 + Math.cos(radians) * 50;
+        const y = 50 + Math.sin(radians) * 50;
+        sectorPoints.push(`${x}% ${y}%`);
+      }
+      bite.style.clipPath = `polygon(${sectorPoints.join(', ')})`;
+      servePizza.append(bite);
+      eatenBites++;
+      playEatingSound();
+      if (eatenBites === 6) {
+        serveStatus.innerHTML = '<span class="serve-finished">All gone! Great job, chef! 🍕</span>';
+        servePizza.setAttribute('aria-label', 'Pizza eaten');
+      } else {
+        serveStatus.textContent = `Nom! Bite ${eatenBites} of 6. Tap the pizza again to eat more.`;
+        servePizza.setAttribute('aria-label', `Baked pizza, ${6 - eatenBites} bites remaining; tap to eat`);
+      }
+    }
+
+    servePizza.addEventListener('click', event => {
+      if (event.detail === 0 || !knifeActive) eatPizzaBite();
+    });
+
+    servePizza.addEventListener('keydown', event => {
+      if (!knifeActive && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        eatPizzaBite();
+      }
+    });
+
+    document.querySelector('#homeButton').addEventListener('click', () => {
+      window.location.reload();
+    });
+
+    updateOvenDisplay();
+  </script>
+</body>
+</html>
